@@ -12,10 +12,10 @@ def generate_launch_description():
   pkg_share = FindPackageShare(package='xarm6').find('xarm6')
  
   # Set the path to the RViz configuration settings
-  default_rviz_config_path = os.path.join(pkg_share, 'rviz/rviz_basic_settings.rviz')
+  default_rviz_config_path = os.path.join(pkg_share, 'rviz/display.rviz')
  
   # Set the path to the URDF file
-  default_urdf_model_path = os.path.join(pkg_share, 'urdf/xarm6_robot.urdf')
+  default_urdf_model_path = os.path.join(pkg_share, 'urdf/xarm6/xarm6.urdf.xacro')
  
   ########### YOU DO NOT NEED TO CHANGE ANYTHING BELOW THIS LINE ##############  
   # Launch configuration variables specific to simulation

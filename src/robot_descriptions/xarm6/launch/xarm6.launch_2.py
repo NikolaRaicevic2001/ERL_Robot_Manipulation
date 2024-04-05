@@ -33,7 +33,6 @@ def generate_launch_description():
         ),
     ])
 
-
 def main(argv=sys.argv[1:]):
     """Run lifecycle nodes via launch."""
     ld = generate_launch_description()
