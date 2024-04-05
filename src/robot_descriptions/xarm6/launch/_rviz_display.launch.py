@@ -17,7 +17,7 @@ from launch.events import Shutdown
 
 def generate_launch_description():
     # rviz2 node
-    rviz2_params = PathJoinSubstitution([FindPackageShare('xarm_description'), 'rviz', 'display.rviz'])
+    rviz2_params = PathJoinSubstitution([FindPackageShare('xarm6'), 'rviz', 'display.rviz'])
     rviz2_node = Node(
         package='rviz2',
         executable='rviz2',
