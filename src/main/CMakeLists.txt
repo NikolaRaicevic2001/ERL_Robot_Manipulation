@@ -1,41 +1,58 @@
 cmake_minimum_required(VERSION 3.8)
 project(main)
 
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
+# find dependencies for C+
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
+# find dependencies for python
+find_package(ament_cmake_python REQUIRED)
+find_package(rclpy)
+
 set(dependencies "rclcpp" "std_msgs" "geometry_msgs")
 
 # Adding Executables
-# add_executable(panda_moveit_target_pose src/panda_moveit_target_pose.cpp)
+# add_executable(panda src/panda.cpp)
 
 # Include directories for the executables
-# target_include_directories(panda_moveit_target_pose PUBLIC
+# target_include_directories(panda PUBLIC
 #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #   $<INSTALL_INTERFACE:include>)
 
 # Compile features for the executables
-# target_compile_features(panda_moveit_target_pose PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+# target_compile_features(panda PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 # Dependencies for the executables
-# ament_target_dependencies(panda_moveit_target_pose
+# ament_target_dependencies(panda
 #   "rclcpp"
 # )
 
-# ament_target_dependencies(xarm6_moveit_target_pose_sub
+# ament_target_dependencies(panda
 #   ${dependencies}
 # )
 
-# Install executables
-install(TARGETS
-  # panda_moveit_target_pose
+# Install executables C+
+# install(TARGETS
+#   panda
+#   DESTINATION lib/${PROJECT_NAME}
+# )
+
+# Install executables Python
+install(PROGRAMS
+  scripts/joint_position_controller.py
+  scripts/joint_velocity_controller.py
+  scripts/xarm6_traj_controller_publisher.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
