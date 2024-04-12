@@ -25,8 +25,22 @@ make test-0002-get_property # build example/test-0002-get_property.cc
 make clean
 make # make xarm && make test
 # ./build/example/0002-get_property 192.168.1.221
+cd ../
 
 # 3) franka_ros2
+sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
+git clone --recursive https://github.com/frankaemika/libfranka # only for panda
+cd libfranka
+git checkout 0.13.3
+git submodule update
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF ..
+cmake --build .
+cpack -G DEB
+sudo dpkg -i libfranka*.deb
+cd ../
+cd ../
 git clone https://github.com/frankaemika/franka_ros2.git 
 
 # 4) 
