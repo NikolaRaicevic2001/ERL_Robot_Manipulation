@@ -60,7 +60,7 @@ class ArmTrajectoryClient(Node):
 def main(args=None):
     rclpy.init(args=args)
     arm_trajectory_client = ArmTrajectoryClient()
-    positions = [1.5, -0.5, 0.1, 0.2, 0.3, -0.1]  # Adjust as needed
+    positions = [0.0, 0.01, -1.57, 0.0, 1.57, 0.0]  # Adjust as needed
     time_to_reach = 5  # 5 seconds
     arm_trajectory_client.send_goal(positions, time_to_reach)
     rclpy.spin(arm_trajectory_client)
