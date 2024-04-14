@@ -15,6 +15,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(controller_manager_msgs REQUIRED)
 
 # find dependencies for python
 find_package(ament_cmake_python REQUIRED)
@@ -23,40 +24,45 @@ find_package(rclpy)
 set(dependencies "rclcpp" "std_msgs" "geometry_msgs")
 
 # Adding Executables
-# add_executable(panda src/panda.cpp)
+add_executable(robot_controller src/robot_controller.cpp)
 
 # Include directories for the executables
-# target_include_directories(panda PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
+target_include_directories(robot_controller PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
 # Compile features for the executables
-# target_compile_features(panda PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(robot_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 # Dependencies for the executables
-# ament_target_dependencies(panda
-#   "rclcpp"
-# )
+ament_target_dependencies(robot_controller 
+"rclcpp"
+"controller_manager_msgs"
+)
 
 # ament_target_dependencies(panda
 #   ${dependencies}
 # )
 
 # Install executables C+
-# install(TARGETS
-#   panda
-#   DESTINATION lib/${PROJECT_NAME}
-# )
+install(TARGETS
+  robot_controller
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 # Install executables Python
 install(PROGRAMS
   scripts/joint_position_controller.py
   scripts/joint_velocity_controller.py
+  scripts/move_arm.py
   scripts/xarm6_traj_controller_publisher.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Install launch directory
+# Install directories
+install(DIRECTORY config/
+    DESTINATION share/${PROJECT_NAME}/config)
+
 install(DIRECTORY launch 
   DESTINATION share/${PROJECT_NAME}
 )
