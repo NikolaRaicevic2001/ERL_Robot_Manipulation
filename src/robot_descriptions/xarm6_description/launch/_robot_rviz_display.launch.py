@@ -44,7 +44,7 @@ def generate_launch_description():
     kinematics_suffix = LaunchConfiguration('kinematics_suffix', default='')
     
     # robot joint state launch
-    # xarm_description/launch/_robot_joint_state.launch.py
+    # xarm6_description/launch/_robot_joint_state.launch.py
     robot_joint_state_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/_robot_joint_state.launch.py']),
         launch_arguments={
@@ -77,7 +77,7 @@ def generate_launch_description():
     )
 
     # rviz2 display launch
-    # xarm_description/launch/_rviz_display.launch.py
+    # xarm6_description/launch/_rviz_display.launch.py
     rviz2_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/_rviz_display.launch.py']),
     )

@@ -4,7 +4,7 @@
   <xacro:arg name="prefix" default=""/>
   <xacro:arg name="mesh_suffix" default="stl"/>
 
-  <xacro:include filename="$(find xarm_description)/urdf/vacuum_gripper/vacuum_gripper_macro.xacro" />
+  <xacro:include filename="$(find xarm6_description)/urdf/vacuum_gripper/vacuum_gripper_macro.xacro" />
 
   <xacro:vacuum_gripper_device robot_type="$(arg robot_type)" prefix="$(arg prefix)" mesh_suffix="$(arg mesh_suffix)" />
 

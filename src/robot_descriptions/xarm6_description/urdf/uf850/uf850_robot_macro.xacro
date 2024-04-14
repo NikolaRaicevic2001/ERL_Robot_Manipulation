@@ -20,11 +20,11 @@
 
     <!-- include uf850 relative macros: -->
     <xacro:if value="${is_ros2}">
-      <xacro:include filename="$(find xarm_description)/urdf/uf850/uf850.ros2_control.xacro" />
+      <xacro:include filename="$(find xarm6_description)/urdf/uf850/uf850.ros2_control.xacro" />
     </xacro:if>
-    <xacro:include filename="$(find xarm_description)/urdf/uf850/uf850.urdf.xacro" />
-    <xacro:include filename="$(find xarm_description)/urdf/uf850/uf850.transmission.xacro" />
-    <xacro:include filename="$(find xarm_description)/urdf/uf850/uf850.gazebo.xacro" />
+    <xacro:include filename="$(find xarm6_description)/urdf/uf850/uf850.urdf.xacro" />
+    <xacro:include filename="$(find xarm6_description)/urdf/uf850/uf850.transmission.xacro" />
+    <xacro:include filename="$(find xarm6_description)/urdf/uf850/uf850.gazebo.xacro" />
 
     <xacro:if value="${limited}">
       <xacro:if value="${is_ros2}">

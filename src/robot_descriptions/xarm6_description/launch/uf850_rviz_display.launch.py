@@ -22,7 +22,7 @@ def generate_launch_description():
     add_bio_gripper = LaunchConfiguration('add_bio_gripper', default=False)
 
     # robot rviz launch
-    # xarm_description/launch/_robot_rviz_display.launch.py
+    # xarm6_description/launch/_robot_rviz_display.launch.py
     robot_rviz_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/_robot_rviz_display.launch.py']),
         launch_arguments={

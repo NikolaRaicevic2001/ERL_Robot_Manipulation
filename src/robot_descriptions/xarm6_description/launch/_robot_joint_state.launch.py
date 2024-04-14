@@ -47,9 +47,9 @@ def launch_setup(context, *args, **kwargs):
     kinematics_suffix = LaunchConfiguration('kinematics_suffix', default='')
 
     # robot description launch
-    # xarm_description/launch/_robot_description.launch.py
+    # xarm6_description/launch/_robot_description.launch.py
     robot_description_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(PathJoinSubstitution([FindPackageShare('xarm_description'), 'launch', '_robot_description.launch.py'])),
+        PythonLaunchDescriptionSource(PathJoinSubstitution([FindPackageShare('xarm6_description'), 'launch', '_robot_description.launch.py'])),
         launch_arguments={
             'prefix': prefix,
             'hw_ns': hw_ns,
