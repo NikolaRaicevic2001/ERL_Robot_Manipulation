@@ -33,11 +33,13 @@ if(BUILD_TESTING)
 endif()
 
 install(DIRECTORY
+  config
+  controller
+  launch
+  meshes
   rviz
   urdf
-  config
-  meshes
-  launch
+  worlds
   DESTINATION share/${PROJECT_NAME}/
 )
 

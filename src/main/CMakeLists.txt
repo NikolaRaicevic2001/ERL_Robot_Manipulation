@@ -12,10 +12,13 @@ endif()
 
 # find dependencies for C+
 find_package(ament_cmake REQUIRED)
+find_package(controller_manager_msgs REQUIRED)
+find_package(controller_manager REQUIRED)
+find_package(control_toolbox REQUIRED)
+find_package(gazebo_ros REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(controller_manager_msgs REQUIRED)
 
 # find dependencies for python
 find_package(ament_cmake_python REQUIRED)
@@ -60,9 +63,6 @@ install(PROGRAMS
 )
 
 # Install directories
-install(DIRECTORY config/
-    DESTINATION share/${PROJECT_NAME}/config)
-
 install(DIRECTORY launch 
   DESTINATION share/${PROJECT_NAME}
 )
