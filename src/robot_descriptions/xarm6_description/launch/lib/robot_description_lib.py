@@ -3,7 +3,6 @@
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
-
 def get_xacro_file_content(
     xacro_file=PathJoinSubstitution([FindPackageShare('xarm6_description'), 'urdf', 'xarm_device.urdf.xacro']), 
     arguments={}):

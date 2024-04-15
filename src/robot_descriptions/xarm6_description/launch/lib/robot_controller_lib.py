@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-# Software License Agreement (BSD License)
-#
-# Copyright (c) 2021, UFACTORY, Inc.
-# All rights reserved.
-#
-# Author: Vinman <vinman.wen@ufactory.cc> <vinman.cub@gmail.com>
 
 import os
 import yaml
@@ -34,14 +28,14 @@ def add_prefix_to_ros2_control_params(prefix, ros2_control_params):
             controller_manager_ros__parameters[new_name] = controller_manager_ros__parameters.pop(name)
 
 
-def generate_ros2_control_params_temp_file(ros2_control_params_path, prefix='', add_gripper=False, add_bio_gripper=False, ros_namespace='', update_rate=None, robot_type='xarm'):
+def generate_ros2_control_params_temp_file(ros2_control_params_path, prefix='', add_gripper=False, add_bio_gripper=False, ros_namespace='', update_rate=None):
     if ros_namespace or prefix or add_gripper or add_bio_gripper or update_rate:
         with open(ros2_control_params_path, 'r') as f:
             ros2_control_params_yaml = yaml.safe_load(f)
         if update_rate is not None:
             ros2_control_params_yaml['controller_manager']['ros__parameters']['update_rate'] = update_rate
         if add_gripper:
-            gripper_control_params_path = os.path.join(get_package_share_directory('xarm_controller'), 'config', '{}_gripper_controllers.yaml'.format(robot_type))
+            gripper_control_params_path = os.path.join(get_package_share_directory('xarm6_description'), 'config', 'xarm_gripper_controllers.yaml')
             # check file is exists or not
             if os.path.exists(gripper_control_params_path):
                 with open(gripper_control_params_path, 'r') as f:
@@ -51,7 +45,7 @@ def generate_ros2_control_params_temp_file(ros2_control_params_path, prefix='', 
                     if name in gripper_control_params_yaml:
                         ros2_control_params_yaml[name] = gripper_control_params_yaml[name]
         elif add_bio_gripper:
-            gripper_control_params_path = os.path.join(get_package_share_directory('xarm_controller'), 'config', 'bio_gripper_controllers.yaml')
+            gripper_control_params_path = os.path.join(get_package_share_directory('xarm6_description'), 'config', 'bio_gripper_controllers.yaml')
             # check file is exists or not
             if os.path.exists(gripper_control_params_path):
                 with open(gripper_control_params_path, 'r') as f:
@@ -72,13 +66,8 @@ def generate_ros2_control_params_temp_file(ros2_control_params_path, prefix='', 
     return ros2_control_params_path
 
 
-def generate_dual_ros2_control_params_temp_file(
-    ros2_control_params_path_1, ros2_control_params_path_2, 
-    prefix_1='L_', prefix_2='R_', 
-    add_gripper_1=False, add_gripper_2=False, 
-    add_bio_gripper_1=False, add_bio_gripper_2=False, 
-    ros_namespace='', update_rate=None,
-    robot_type_1='xarm', robot_type_2='xarm'):
+def generate_dual_ros2_control_params_temp_file(ros2_control_params_path_1, ros2_control_params_path_2, prefix_1='L_', prefix_2='R_', add_gripper_1=False, 
+                                                add_gripper_2=False, add_bio_gripper_1=False, add_bio_gripper_2=False, ros_namespace='', update_rate=None):
     with open(ros2_control_params_path_1, 'r') as f:
         ros2_control_params_yaml_1 = yaml.safe_load(f)
     with open(ros2_control_params_path_2, 'r') as f:
@@ -88,7 +77,7 @@ def generate_dual_ros2_control_params_temp_file(
         ros2_control_params_yaml_2['controller_manager']['ros__parameters']['update_rate'] = update_rate
 
     if add_gripper_1:
-        gripper_control_params_path = os.path.join(get_package_share_directory('xarm_controller'), 'config', '{}_gripper_controllers.yaml'.format(robot_type_1))
+        gripper_control_params_path = os.path.join(get_package_share_directory('xarm6_description'), 'config', 'xarm_gripper_controllers.yaml')
         # check file is exists or not
         if os.path.exists(gripper_control_params_path):
             with open(gripper_control_params_path, 'r') as f:
@@ -98,7 +87,7 @@ def generate_dual_ros2_control_params_temp_file(
                 if name in gripper_control_params_yaml:
                     ros2_control_params_yaml_1[name] = gripper_control_params_yaml[name]
     elif add_bio_gripper_1:
-        gripper_control_params_path = os.path.join(get_package_share_directory('xarm_controller'), 'config', 'bio_gripper_controllers.yaml')
+        gripper_control_params_path = os.path.join(get_package_share_directory('xarm6_description'), 'config', 'bio_gripper_controllers.yaml')
         # check file is exists or not
         if os.path.exists(gripper_control_params_path):
             with open(gripper_control_params_path, 'r') as f:
@@ -109,7 +98,7 @@ def generate_dual_ros2_control_params_temp_file(
                     ros2_control_params_yaml_1[name] = gripper_control_params_yaml[name]
         
     if add_gripper_2:
-        gripper_control_params_path = os.path.join(get_package_share_directory('xarm_controller'), 'config', '{}_gripper_controllers.yaml'.format(robot_type_2))
+        gripper_control_params_path = os.path.join(get_package_share_directory('xarm6_description'), 'config', 'xarm_gripper_controllers.yaml')
         # check file is exists or not
         if os.path.exists(gripper_control_params_path):
             with open(gripper_control_params_path, 'r') as f:
@@ -119,7 +108,7 @@ def generate_dual_ros2_control_params_temp_file(
                 if name in gripper_control_params_yaml:
                     ros2_control_params_yaml_2[name] = gripper_control_params_yaml[name]
     elif add_bio_gripper_2:
-        gripper_control_params_path = os.path.join(get_package_share_directory('xarm_controller'), 'config', 'bio_gripper_controllers.yaml')
+        gripper_control_params_path = os.path.join(get_package_share_directory('xarm6_description'), 'config', 'bio_gripper_controllers.yaml')
         # check file is exists or not
         if os.path.exists(gripper_control_params_path):
             with open(gripper_control_params_path, 'r') as f:

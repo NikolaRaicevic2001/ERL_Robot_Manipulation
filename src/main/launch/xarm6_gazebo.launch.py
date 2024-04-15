@@ -11,14 +11,13 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch.event_handlers import OnProcessExit
 from launch.actions import OpaqueFunction
-
     
 def launch_setup(context, *args, **kwargs):
     prefix = LaunchConfiguration('prefix', default='')
     hw_ns = LaunchConfiguration('hw_ns', default='xarm')
     limited = LaunchConfiguration('limited', default=False)
-    effort_control = LaunchConfiguration('effort_control', default=False)
-    velocity_control = LaunchConfiguration('velocity_control', default=False)
+    effort_control = LaunchConfiguration('effort_control', default=True)
+    velocity_control = LaunchConfiguration('velocity_control', default=True)
     add_gripper = LaunchConfiguration('add_gripper', default=True)
     add_vacuum_gripper = LaunchConfiguration('add_vacuum_gripper', default=False)
     add_bio_gripper = LaunchConfiguration('add_bio_gripper', default=False)
@@ -48,8 +47,7 @@ def launch_setup(context, *args, **kwargs):
     geometry_mesh_tcp_rpy = LaunchConfiguration('geometry_mesh_tcp_rpy', default='"0 0 0"')
     kinematics_suffix = LaunchConfiguration('kinematics_suffix', default='')
     
-    load_controller = LaunchConfiguration('load_controller', default=False)
-    
+    load_controller = LaunchConfiguration('load_controller', default=True)
     ros_namespace = LaunchConfiguration('ros_namespace', default='').perform(context)
 
     # ros2 control params
@@ -62,7 +60,6 @@ def launch_setup(context, *args, **kwargs):
         add_bio_gripper=add_bio_gripper.perform(context) in ('True', 'true'),
         ros_namespace=LaunchConfiguration('ros_namespace', default='').perform(context),
         update_rate=1000,
-        robot_type=robot_type.perform(context)
     )
 
     # robot_description
@@ -196,3 +193,21 @@ def generate_launch_description():
     return LaunchDescription([
         OpaqueFunction(function=launch_setup)
     ])
+
+
+# ros2 topic pub /xarm6_traj_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{
+#   header: {
+#     stamp: {sec: 0, nanosec: 0},
+#     frame_id: ''
+#   },
+#   joint_names: ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6'],
+#   points: [
+#     {
+#       positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+#       velocities: [0.5, -0.5, 0.3, -0.3, 0.2, -0.2],
+#       accelerations: [],
+#       effort: [],
+#       time_from_start: {sec: 1, nanosec: 0}
+#     }
+#   ]
+# }"
