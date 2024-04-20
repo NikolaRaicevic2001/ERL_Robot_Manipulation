@@ -5,7 +5,6 @@ import yaml
 from tempfile import NamedTemporaryFile
 from ament_index_python import get_package_share_directory
 
-
 def add_prefix_to_ros2_control_params(prefix, ros2_control_params):
     if not prefix:
         return
