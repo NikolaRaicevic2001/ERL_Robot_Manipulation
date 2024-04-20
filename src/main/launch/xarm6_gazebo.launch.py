@@ -150,6 +150,7 @@ def launch_setup(context, *args, **kwargs):
     controllers = [
         'joint_state_broadcaster',
         'xarm6_traj_controller',
+        'xarm6_velo_traj_controller',
     ]
     if robot_type.perform(context) != 'lite' and add_gripper.perform(context) in ('True', 'true'):
         controllers.append('{}{}_gripper_traj_controller'.format(prefix.perform(context), robot_type.perform(context)))
