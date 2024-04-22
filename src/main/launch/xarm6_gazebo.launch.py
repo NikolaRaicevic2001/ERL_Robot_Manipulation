@@ -149,13 +149,10 @@ def launch_setup(context, *args, **kwargs):
     # Load controllers
     controllers = [
         'joint_state_broadcaster',
-        'xarm6_traj_controller',
+        # 'xarm6_traj_controller',
         'xarm6_velo_traj_controller',
+        # 'xarm_gripper_traj_controller',
     ]
-    if robot_type.perform(context) != 'lite' and add_gripper.perform(context) in ('True', 'true'):
-        controllers.append('{}{}_gripper_traj_controller'.format(prefix.perform(context), robot_type.perform(context)))
-    elif robot_type.perform(context) != 'lite' and add_bio_gripper.perform(context) in ('True', 'true'):
-        controllers.append('{}bio_gripper_traj_controller'.format(prefix.perform(context)))
     load_controllers = []
     if load_controller.perform(context) in ('True', 'true'):
         for controller in controllers:
@@ -212,3 +209,5 @@ def generate_launch_description():
 #     }
 #   ]
 # }"
+
+# ros2 topic pub /xarm6_velo_traj_controller/commands std_msgs/msg/Float64MultiArray "{layout: {dim: [{label: 'joints', size: 6, stride: 6}], data_offset: 0}, data: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]}"

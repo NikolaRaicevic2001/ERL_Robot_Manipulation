@@ -1,35 +1,22 @@
-# controller_manager:
-#   ros__parameters:
-  
-#     # only for fake control
-#     xarm_gripper_traj_controller:
-#       type: joint_trajectory_controller/JointTrajectoryController
-
-# # only for fake control
-# xarm_gripper_traj_controller:
-#   ros__parameters:
-#     command_interfaces:
-#       - position
-#     state_interfaces:
-#       - position
-#       - velocity
-#     joints:
-#       - drive_joint
-#     interface_name: position
-
 controller_manager:
   ros__parameters:
+    update_rate: 50  # Hz
+
+    # only for fake control
     xarm_gripper_traj_controller:
       type: joint_trajectory_controller/JointTrajectoryController
-      joints:
-        - drive_joint
-      command_interfaces:
-        - position
-      state_interfaces:
-        - position
-        - velocity
 
-
-
-
-
+# only for fake control
+xarm_gripper_traj_controller:
+  ros__parameters:
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    joints:
+      - drive_joint
+    constraints:
+      goal_time: 0.5
+      stopped_velocity_tolerance: 0.05
+      drive_joint: {trajectory: 1, goal: 0.01}

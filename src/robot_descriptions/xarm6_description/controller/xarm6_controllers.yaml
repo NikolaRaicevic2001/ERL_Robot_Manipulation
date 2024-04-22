@@ -39,7 +39,6 @@ xarm6_traj_controller:
     state_publish_rate: 25.0
     action_monitor_rate: 10.0
 
-
 xarm6_velo_traj_controller:
   ros__parameters:
     command_interfaces:
