@@ -37,6 +37,7 @@ install(DIRECTORY
   controller
   launch
   meshes
+  models
   rviz
   urdf
   worlds

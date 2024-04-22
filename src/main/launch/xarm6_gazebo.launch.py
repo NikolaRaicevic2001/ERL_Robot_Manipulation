@@ -146,6 +146,21 @@ def launch_setup(context, *args, **kwargs):
         parameters=[{'use_sim_time': True}],
     )
 
+    gazebo_spawn_entity_node_box = Node(
+        package="gazebo_ros",
+        executable="spawn_entity.py",
+        output='screen',
+        arguments=[
+            '-entity', 'box',  # Assuming 'box' as the entity name
+            '-file', PathJoinSubstitution([FindPackageShare('xarm6_description'), 'models', 'box.sdf']),
+            '-x', '0.2',
+            '-y', '1.0',
+            '-z', '0.0',
+            '-Y', '0.0'
+        ],
+        parameters=[{'use_sim_time': True}],
+    )
+
     # Load controllers
     controllers = [
         'joint_state_broadcaster',
@@ -169,21 +184,18 @@ def launch_setup(context, *args, **kwargs):
 
     if len(load_controllers) > 0:
         return [
-            RegisterEventHandler(
-                event_handler=OnProcessExit(
-                    target_action=gazebo_spawn_entity_node,
-                    on_exit=load_controllers,
-                )
-            ),
+            RegisterEventHandler(event_handler=OnProcessExit(target_action=gazebo_spawn_entity_node,on_exit=load_controllers,)),
             gazebo_launch,
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
+            gazebo_spawn_entity_node_box,
         ]
     else:
         return [
             gazebo_launch,
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
+            gazebo_spawn_entity_node_box,
         ]
 
 

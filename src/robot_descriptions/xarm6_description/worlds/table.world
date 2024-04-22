@@ -12,13 +12,27 @@
       <name>table</name>
       <pose>0.0 -0.84 0 0 0 0</pose>
     </include>
+    <include>
+      <uri>model://bowl</uri>
+      <name>bowl</name>
+      <pose>0.0 -1.0 1.05 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://beer</uri>
+      <name>beer</name>
+      <pose>-0.2 -1.0 1.05 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://coke_can</uri>
+      <name>coke_can</name>
+      <pose>0.2 -1.0 1.05 0 0 0</pose>
+    </include>
 
     <physics type="ode">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
-      <!-- (2022-12-20) humble: change gravity from [0 0 -9.81] to [0 0 0] -->
-      <gravity>0 0 0</gravity>
+      <gravity>0 0 -0.5</gravity>
     </physics>
 
   </world>
