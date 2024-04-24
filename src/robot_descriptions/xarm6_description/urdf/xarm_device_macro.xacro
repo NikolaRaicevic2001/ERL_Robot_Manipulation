@@ -227,6 +227,34 @@
       <parent link="${prefix}link${dof}" />
       <child link="${prefix}link_eef" />
     </joint>
+
+
+
+  <!-- Define the position and orientation of the camera in the environment -->
+  <link name="${prefix}realsense_camera_link">
+    <origin xyz="1 2 1.5" rpy="0.785 0 1.57" />
+  </link>
+  <joint name="${prefix}realsense_camera_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="world"/>
+    <child link="${prefix}realsense_camera_link" />
+  </joint>
+
+  <!-- Attach the RealSense camera to the newly defined link -->
+  <xacro:d435i_urdf prefix="${prefix}realsense_camera_" add_d435i_links="${add_d435i_links}" />
+  <xacro:if value="${add_d435i_links}">
+    <xacro:include filename="$(find xarm6_description)/urdf/camera/realsense.gazebo.xacro" />    
+    <xacro:realsense_gazebo prefix="${prefix}realsense_camera_" />
+  </xacro:if>
+</xacro:if>
+
+<!-- Optional: Any additional environment or robot links can be defined here -->
+<joint name="${prefix}joint_eef" type="fixed">
+  <origin xyz="0 0 0" rpy="0 0 0" />
+  <parent link="${prefix}link${dof}" />
+  <child link="${prefix}link_eef" />
+</joint>
+
     
     <xacro:if value="${add_gripper}">
       <xacro:if value="${robot_type == 'lite'}">

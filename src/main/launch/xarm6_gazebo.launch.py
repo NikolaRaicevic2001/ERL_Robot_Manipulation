@@ -4,13 +4,14 @@ import os
 from ament_index_python import get_package_share_directory
 from launch.launch_description_sources import load_python_launch_file_as_module
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler, EmitEvent
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch.event_handlers import OnProcessExit
 from launch.actions import OpaqueFunction
+from launch.events import Shutdown
     
 def launch_setup(context, *args, **kwargs):
     prefix = LaunchConfiguration('prefix', default='')
@@ -25,7 +26,7 @@ def launch_setup(context, *args, **kwargs):
     robot_type = LaunchConfiguration('robot_type', default='xarm')
     ros2_control_plugin = LaunchConfiguration('ros2_control_plugin', default='gazebo_ros2_control/GazeboSystem')
     
-    add_realsense_d435i = LaunchConfiguration('add_realsense_d435i', default=False)
+    add_realsense_d435i = LaunchConfiguration('add_realsense_d435i', default=True)
     add_d435i_links = LaunchConfiguration('add_d435i_links', default=True)
     model1300 = LaunchConfiguration('model1300', default=False)
     robot_sn = LaunchConfiguration('robot_sn', default='')
@@ -161,6 +162,20 @@ def launch_setup(context, *args, **kwargs):
         parameters=[{'use_sim_time': True}],
     )
 
+    # rviz2 node
+    rviz2_params = PathJoinSubstitution([FindPackageShare('xarm6_description'), 'rviz', 'display.rviz'])
+    rviz2_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', rviz2_params],
+        remappings=[
+            ('/tf', 'tf'),
+            ('/tf_static', 'tf_static'),
+        ]
+    )
+
     # Load controllers
     controllers = [
         'joint_state_broadcaster',
@@ -185,17 +200,21 @@ def launch_setup(context, *args, **kwargs):
     if len(load_controllers) > 0:
         return [
             RegisterEventHandler(event_handler=OnProcessExit(target_action=gazebo_spawn_entity_node,on_exit=load_controllers,)),
+            RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
             gazebo_launch,
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
             gazebo_spawn_entity_node_box,
+            # rviz2_node,
         ]
     else:
         return [
+            RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
             gazebo_launch,
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
             gazebo_spawn_entity_node_box,
+            # rviz2_node,
         ]
 
 
@@ -203,6 +222,7 @@ def generate_launch_description():
     return LaunchDescription([
         OpaqueFunction(function=launch_setup)
     ])
+
 
 
 # ros2 topic pub /xarm6_traj_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{
