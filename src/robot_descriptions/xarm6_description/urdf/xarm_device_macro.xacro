@@ -135,7 +135,7 @@
       </visual>
     </link>
     <joint name="world_to_fixed_frame" type="fixed">
-      <origin xyz="5 5 5" rpy="10 10 10"/> 
+      <origin xyz="0 0 0" rpy="0 0 0"/> 
       <parent link="${attach_to}"/>
       <child link="fixed_frame"/>
     </joint>
