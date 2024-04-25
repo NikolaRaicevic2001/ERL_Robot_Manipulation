@@ -16,7 +16,7 @@ from launch.events import Shutdown
 def launch_setup(context, *args, **kwargs):
     prefix = LaunchConfiguration('prefix', default='')
     hw_ns = LaunchConfiguration('hw_ns', default='xarm')
-    limited = LaunchConfiguration('limited', default=False)
+    limited = LaunchConfiguration('limited', default=True)
     effort_control = LaunchConfiguration('effort_control', default=True)
     velocity_control = LaunchConfiguration('velocity_control', default=True)
     add_gripper = LaunchConfiguration('add_gripper', default=True)
@@ -28,13 +28,13 @@ def launch_setup(context, *args, **kwargs):
     
     add_realsense_d435i = LaunchConfiguration('add_realsense_d435i', default=True)
     add_d435i_links = LaunchConfiguration('add_d435i_links', default=True)
-    model1300 = LaunchConfiguration('model1300', default=False)
+    model1300 = LaunchConfiguration('model1300', default=True)
     robot_sn = LaunchConfiguration('robot_sn', default='')
     attach_to = LaunchConfiguration('attach_to', default='world')
     attach_xyz = LaunchConfiguration('attach_xyz', default='"0 0 0"')
     attach_rpy = LaunchConfiguration('attach_rpy', default='"0 0 0"')
 
-    add_other_geometry = LaunchConfiguration('add_other_geometry', default=False)
+    add_other_geometry = LaunchConfiguration('add_other_geometry', default=True)
     geometry_type = LaunchConfiguration('geometry_type', default='box')
     geometry_mass = LaunchConfiguration('geometry_mass', default=0.1)
     geometry_height = LaunchConfiguration('geometry_height', default=0.1)
@@ -200,21 +200,21 @@ def launch_setup(context, *args, **kwargs):
     if len(load_controllers) > 0:
         return [
             RegisterEventHandler(event_handler=OnProcessExit(target_action=gazebo_spawn_entity_node,on_exit=load_controllers,)),
-            RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
+            # RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
             gazebo_launch,
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
             gazebo_spawn_entity_node_box,
-            rviz2_node,
+            # rviz2_node,
         ]
     else:
         return [
-            RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
+            # RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
             gazebo_launch,
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
             gazebo_spawn_entity_node_box,
-            rviz2_node,
+            # rviz2_node,
         ]
 
 
