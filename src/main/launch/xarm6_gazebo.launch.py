@@ -200,21 +200,21 @@ def launch_setup(context, *args, **kwargs):
     if len(load_controllers) > 0:
         return [
             RegisterEventHandler(event_handler=OnProcessExit(target_action=gazebo_spawn_entity_node,on_exit=load_controllers,)),
-            # RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
+            RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
             gazebo_launch,
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
             gazebo_spawn_entity_node_box,
-            # rviz2_node,
+            rviz2_node,
         ]
     else:
         return [
-            # RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
+            RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
             gazebo_launch,
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
             gazebo_spawn_entity_node_box,
-            # rviz2_node,
+            rviz2_node,
         ]
 
 
