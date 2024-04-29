@@ -146,7 +146,7 @@
         </camera>
         <always_on>1</always_on>
         <update_rate>30</update_rate>
-        <visualize>0</visualize>
+        <visualize>1</visualize>
       </sensor>
     </gazebo>
     <gazebo reference="${camera_01}_camera_left_ir_frame">
@@ -198,7 +198,7 @@
       </sensor>
     </gazebo>
     <gazebo>
-      <plugin name="realsense_gazebo_camera" filename="librealsense_gazebo_plugin.so">
+      <plugin name="realsense_${camera_01}" filename="librealsense_gazebo_plugin.so">
         <prefix>camera</prefix>
         <depthUpdateRate>30.0</depthUpdateRate>
         <colorUpdateRate>30.0</colorUpdateRate>

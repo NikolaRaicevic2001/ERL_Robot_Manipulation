@@ -100,7 +100,7 @@
       </sensor>
     </gazebo>
     <gazebo>
-      <plugin name="realsense_gazebo_camera" filename="librealsense_gazebo_plugin.so">
+      <plugin name="realsense_${camera_02}" filename="librealsense_gazebo_plugin.so">
         <prefix>camera</prefix>
         <depthUpdateRate>30.0</depthUpdateRate>
         <colorUpdateRate>30.0</colorUpdateRate>
