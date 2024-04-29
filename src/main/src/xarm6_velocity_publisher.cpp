@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
     int state = 0;
     rclcpp::Time last_time = node->now();
-    rclcpp::Duration interval(1s);  // Time to spend in each state
+    rclcpp::Duration interval(3s);  // Time to spend in each state
 
     while (rclcpp::ok()) {
         // Check if it's time to change the state

@@ -134,7 +134,7 @@
         <xacro:realsense_gazebo prefix="${prefix}" />
       </xacro:if>
     </xacro:if>
-    
+
     <xacro:unless value="${add_realsense_d435i}">
       <link name="${prefix}link_eef"/>
     </xacro:unless>
@@ -209,7 +209,7 @@
 
     <xacro:if value="${use_gazebo_camera}">
       <xacro:include filename="$(find xarm6_description)/urdf/camera/camera.gazebo.xacro" />
-      <xacro:camera_gazebo prefix="${prefix}" />
+      <xacro:camera_gazebo prefix="${prefix}"/>
     </xacro:if>
 
     <xacro:device_macro_end />

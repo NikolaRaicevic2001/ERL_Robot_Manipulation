@@ -113,7 +113,7 @@ def generate_launch_description():
         # node_rviz,
         spawn_broadcaster,
         spawn_controller,
-        rviz2_node
+        # rviz2_node,
     ])
 
 # ros2 topic pub /joint_trajectory_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{
