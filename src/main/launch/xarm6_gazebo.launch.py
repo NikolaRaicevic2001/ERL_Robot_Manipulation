@@ -162,6 +162,22 @@ def launch_setup(context, *args, **kwargs):
         parameters=[{'use_sim_time': True}],
     )
 
+    # gazebo_spawn_entity_node_camera = Node(
+    #     package="gazebo_ros",
+    #     executable="spawn_entity.py",
+    #     output='screen',
+    #     arguments=[
+    #         '-entity', 'camera',  # Assuming 'box' as the entity name
+    #         '-file', PathJoinSubstitution([FindPackageShare('xarm6_description'), 'urdf','camera','_d435.gazebo.xacro']),
+    #         '-x', '2.2',
+    #         '-y', '1.0',
+    #         '-z', '0.0',
+    #         '-Y', '0.0'
+    #     ],
+    #     parameters=[{'use_sim_time': True}],
+    #     # remappings=[('/tf', 'tf'),('/tf_static', 'tf_static'),]
+    # )
+
     # rviz2 node
     rviz2_params = PathJoinSubstitution([FindPackageShare('xarm6_description'), 'rviz', 'display.rviz'])
     rviz2_node = Node(
@@ -205,6 +221,7 @@ def launch_setup(context, *args, **kwargs):
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
             gazebo_spawn_entity_node_box,
+            # gazebo_spawn_entity_node_camera,
             rviz2_node,
         ]
     else:
@@ -214,6 +231,7 @@ def launch_setup(context, *args, **kwargs):
             robot_state_publisher_node,
             gazebo_spawn_entity_node,
             gazebo_spawn_entity_node_box,
+            # gazebo_spawn_entity_node_camera,
             rviz2_node,
         ]
 

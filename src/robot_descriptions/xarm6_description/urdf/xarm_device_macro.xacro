@@ -19,7 +19,7 @@
     ros2_control_params:=''
     load_gazebo_plugin:=false 
     add_realsense_d435i:=false
-    add_d435i_links:=true
+    add_d435i_links:=false
     use_gazebo_camera:=false
     add_other_geometry:=false 
     geometry_type:='box'
@@ -126,19 +126,6 @@
     </xacro:if>
 
     <!-- (xarm) Load RealSense D435i URDF -->
-    <link name="fixed_frame">
-      <visual>
-        <geometry>
-          <box size="0.1 0.1 0.1"/>
-        </geometry>
-        <material name="Black"/>
-      </visual>
-    </link>
-    <joint name="world_to_fixed_frame" type="fixed">
-      <origin xyz="0 0 0" rpy="0 0 0"/> 
-      <parent link="${attach_to}"/>
-      <child link="fixed_frame"/>
-    </joint>
     <xacro:if value="${add_realsense_d435i}">
       <xacro:include filename="$(find xarm6_description)/urdf/camera/realsense_d435i.urdf.xacro" />
       <xacro:d435i_urdf prefix="${prefix}" add_d435i_links="${add_d435i_links}" />

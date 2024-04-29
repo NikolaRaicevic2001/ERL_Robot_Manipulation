@@ -28,7 +28,6 @@
       <pose>0.2 -1.0 1.05 0 0 0</pose>
     </include>
 
-
     <physics type="ode">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1</real_time_factor>
