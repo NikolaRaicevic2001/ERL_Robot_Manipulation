@@ -14,6 +14,7 @@ from launch.actions import OpaqueFunction
 from launch.events import Shutdown
     
 def launch_setup(context, *args, **kwargs):
+    robot_ip = LaunchConfiguration('robot_ip', default='')
     prefix = LaunchConfiguration('prefix', default='')
     hw_ns = LaunchConfiguration('hw_ns', default='xarm')
     limited = LaunchConfiguration('limited', default=True)
@@ -28,6 +29,7 @@ def launch_setup(context, *args, **kwargs):
     
     add_realsense_d435i = LaunchConfiguration('add_realsense_d435i', default=False)
     add_d435i_links = LaunchConfiguration('add_d435i_links', default=True)
+    use_gazebo_camera = LaunchConfiguration('use_gazebo_camera', default=True)
     model1300 = LaunchConfiguration('model1300', default=False)
     robot_sn = LaunchConfiguration('robot_sn', default='')
     attach_to = LaunchConfiguration('attach_to', default='world')                        
@@ -70,6 +72,7 @@ def launch_setup(context, *args, **kwargs):
         'robot_description': get_xacro_file_content(
             xacro_file=PathJoinSubstitution([FindPackageShare('xarm6_description'), 'urdf', 'xarm_device.urdf.xacro']), 
             arguments={
+                'robot_ip': robot_ip,
                 'prefix': prefix,
                 'dof': dof,
                 'robot_type': robot_type,
@@ -84,6 +87,7 @@ def launch_setup(context, *args, **kwargs):
                 'ros2_control_params': ros2_control_params,
                 'add_realsense_d435i': add_realsense_d435i,
                 'add_d435i_links': add_d435i_links,
+                'use_gazebo_camera': use_gazebo_camera,
                 'model1300': model1300,
                 'robot_sn': robot_sn,
                 'attach_to': attach_to,
@@ -139,7 +143,7 @@ def launch_setup(context, *args, **kwargs):
             '-topic', 'robot_description',
             # '-entity', '{}{}'.format(robot_type.perform(context), dof.perform(context) if robot_type.perform(context) in ('xarm', 'lite') else ''),
             '-entity', 'UF_ROBOT',
-            '-x', '-0.2',
+            '-x', '0.0',
             '-y', '-0.57',
             '-z', '1.021',
             '-Y', '1.571',
@@ -152,7 +156,7 @@ def launch_setup(context, *args, **kwargs):
         executable="spawn_entity.py",
         output='screen',
         arguments=[
-            '-entity', 'box',  # Assuming 'box' as the entity name
+            '-entity', 'box',  
             '-file', PathJoinSubstitution([FindPackageShare('xarm6_description'), 'models', 'box.sdf']),
             '-x', '0.2',
             '-y', '1.0',
@@ -162,21 +166,21 @@ def launch_setup(context, *args, **kwargs):
         parameters=[{'use_sim_time': True}],
     )
 
-    # gazebo_spawn_entity_node_camera = Node(
-    #     package="gazebo_ros",
-    #     executable="spawn_entity.py",
-    #     output='screen',
-    #     arguments=[
-    #         '-entity', 'camera',  # Assuming 'box' as the entity name
-    #         '-file', PathJoinSubstitution([FindPackageShare('xarm6_description'), 'urdf','camera','_d435.gazebo.xacro']),
-    #         '-x', '2.2',
-    #         '-y', '1.0',
-    #         '-z', '0.0',
-    #         '-Y', '0.0'
-    #     ],
-    #     parameters=[{'use_sim_time': True}],
-    #     # remappings=[('/tf', 'tf'),('/tf_static', 'tf_static'),]
-    # )
+    gazebo_spawn_entity_node_camera = Node(
+        package="gazebo_ros",
+        executable="spawn_entity.py",
+        output='screen',
+        arguments=[
+            '-entity', 'camera', 
+            '-file', PathJoinSubstitution([FindPackageShare('xarm6_description'), 'models','camera.urdf.xacro']),
+            '-x', '2.2',
+            '-y', '0.0',
+            '-z', '0.5',
+            '-Y', '0.0'
+        ],
+        parameters=[{'use_sim_time': True}],
+        # remappings=[('/tf', 'tf'),('/tf_static', 'tf_static'),]
+    )
 
     # rviz2 node
     rviz2_params = PathJoinSubstitution([FindPackageShare('xarm6_description'), 'rviz', 'display.rviz'])
@@ -213,28 +217,16 @@ def launch_setup(context, *args, **kwargs):
                 parameters=[{'use_sim_time': True}],
             ))
 
-    if len(load_controllers) > 0:
-        return [
-            RegisterEventHandler(event_handler=OnProcessExit(target_action=gazebo_spawn_entity_node,on_exit=load_controllers,)),
-            RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
-            gazebo_launch,
-            robot_state_publisher_node,
-            gazebo_spawn_entity_node,
-            gazebo_spawn_entity_node_box,
-            # gazebo_spawn_entity_node_camera,
-            rviz2_node,
-        ]
-    else:
-        return [
-            RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
-            gazebo_launch,
-            robot_state_publisher_node,
-            gazebo_spawn_entity_node,
-            gazebo_spawn_entity_node_box,
-            # gazebo_spawn_entity_node_camera,
-            rviz2_node,
-        ]
-
+    return [
+        RegisterEventHandler(event_handler=OnProcessExit(target_action=gazebo_spawn_entity_node,on_exit=load_controllers,)),
+        RegisterEventHandler(event_handler=OnProcessExit(target_action=rviz2_node, on_exit=[EmitEvent(event=Shutdown())])),
+        gazebo_launch,
+        robot_state_publisher_node,
+        gazebo_spawn_entity_node,
+        gazebo_spawn_entity_node_box,
+        # gazebo_spawn_entity_node_camera,
+        rviz2_node,
+    ]
 
 def generate_launch_description():
     return LaunchDescription([
