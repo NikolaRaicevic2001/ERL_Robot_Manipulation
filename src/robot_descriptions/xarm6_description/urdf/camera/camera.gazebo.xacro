@@ -150,7 +150,7 @@
         <rangeMaxDepth>3.0</rangeMaxDepth>
         <pointCloud>true</pointCloud>
         <pointCloudTopicName>${camera_01}/depth/color/points</pointCloudTopicName>
-        <pointCloudCutoff>0.3</pointCloudCutoff>
+        <pointCloudCutoff>0.3</pointCloudCutoff> 
       </plugin>
     </gazebo>
   </xacro:macro>
