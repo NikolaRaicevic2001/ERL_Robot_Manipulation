@@ -26,9 +26,9 @@ def launch_setup(context, *args, **kwargs):
     robot_type = LaunchConfiguration('robot_type', default='xarm')
     ros2_control_plugin = LaunchConfiguration('ros2_control_plugin', default='gazebo_ros2_control/GazeboSystem')
     
-    add_realsense_d435i = LaunchConfiguration('add_realsense_d435i', default=True)
+    add_realsense_d435i = LaunchConfiguration('add_realsense_d435i', default=False)
     add_d435i_links = LaunchConfiguration('add_d435i_links', default=True)
-    model1300 = LaunchConfiguration('model1300', default=True)
+    model1300 = LaunchConfiguration('model1300', default=False)
     robot_sn = LaunchConfiguration('robot_sn', default='')
     attach_to = LaunchConfiguration('attach_to', default='world')                        
     attach_xyz = LaunchConfiguration('attach_xyz', default='"0 0 0"')

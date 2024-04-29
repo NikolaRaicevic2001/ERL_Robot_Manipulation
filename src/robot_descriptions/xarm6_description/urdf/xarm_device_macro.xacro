@@ -134,10 +134,10 @@
         <xacro:realsense_gazebo prefix="${prefix}" />
       </xacro:if>
     </xacro:if>
+    
     <xacro:unless value="${add_realsense_d435i}">
-      <link name="fixed_frame"/>
+      <link name="${prefix}link_eef"/>
     </xacro:unless>
-
     <joint name="${prefix}joint_eef" type="fixed">
       <origin xyz="0 0 0" rpy="0 0 0" />
       <parent link="${prefix}link${dof}" />
