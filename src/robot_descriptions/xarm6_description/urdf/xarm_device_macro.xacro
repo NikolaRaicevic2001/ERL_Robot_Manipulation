@@ -106,7 +106,6 @@
     </xacro:unless>
     
     <xacro:if value="${dof == 6}">
-      <xacro:unless value="${robot_type == 'lite' or robot_type == 'uf850'}">
         <!-- Load XArm6 Robot Model URDF -->
         <xacro:include filename="$(find xarm6_description)/urdf/xarm6/xarm6_robot_macro.xacro" />
         <xacro:xarm6_robot prefix="${prefix}" hw_ns="${hw_ns}" limited="${limited}" 
@@ -122,7 +121,6 @@
           inertial_params_filename="${inertial_params_filename}"
           kinematics_params_filename="${kinematics_params_filename}"
           hard_interface="${hard_interface}" />
-      </xacro:unless>
     </xacro:if>
 
     <!-- (xarm) Load RealSense D435i URDF -->
@@ -144,29 +142,23 @@
       <child link="${prefix}link_eef" />
     </joint>
     <xacro:if value="${add_gripper}">
-      <xacro:unless value="${robot_type == 'lite'}">
         <!-- Load XArm Gripper Model URDF -->
         <xacro:include filename="$(find xarm6_description)/urdf/gripper/xarm_gripper_macro.xacro" />
         <xacro:xarm_gripper_macro prefix="${prefix}" attach_to="${prefix}link_eef" 
           ros2_control_plugin="${ros2_control_plugin}" dof="${dof}" hard_interface="${hard_interface}" />
-      </xacro:unless>
     </xacro:if>
 
     <xacro:if value="${not add_gripper and add_bio_gripper}">
-      <xacro:unless value="${robot_type == 'lite'}">
         <!-- Load BIO Gripper Model URDF -->
         <xacro:include filename="$(find xarm6_description)/urdf/gripper/bio_gripper_macro.xacro" />
         <xacro:bio_gripper_macro prefix="${prefix}" attach_to="${prefix}link_eef" 
           ros2_control_plugin="${ros2_control_plugin}" dof="${dof}" hard_interface="${hard_interface}" />
-      </xacro:unless>
     </xacro:if>
 
     <xacro:if value="${not add_gripper and not add_bio_gripper and add_vacuum_gripper}">
-      <xacro:unless value="${robot_type == 'lite'}">
         <!-- Load XArm Vacuum Gripper Model URDF -->
         <xacro:include filename="$(find xarm6_description)/urdf/vacuum_gripper/xarm_vacuum_gripper.urdf.xacro" />
         <xacro:xarm_vacuum_gripper_urdf prefix="${prefix}" attach_to="${prefix}link_eef" />
-      </xacro:unless>
     </xacro:if>
 
     <xacro:if value="${not add_gripper and not add_vacuum_gripper and add_other_geometry}">
@@ -186,9 +178,6 @@
     <xacro:if value="${load_gazebo_plugin}">
       <xacro:include filename="$(find xarm6_description)/urdf/common/common.gazebo.xacro" />
       <xacro:if value="${is_ros2}">
-        <xacro:if value="${robot_type == 'uf850' or robot_type == 'xarm7_mirror'}">
-          <xacro:property name="new_ros2_control_params" value="$(find xarm_controller)/config/${robot_type}_controllers.yaml"/>
-        </xacro:if>
         <xacro:unless value="${robot_type == 'uf850' or robot_type == 'xarm7_mirror'}">
           <xacro:property name="new_ros2_control_params" value="$(find xarm_controller)/config/${robot_type}${dof}_controllers.yaml"/>
         </xacro:unless>
