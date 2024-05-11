@@ -9,6 +9,7 @@ from launch.actions import DeclareLaunchArgument
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('input_cloud_topic', default_value='/camera_front/depth/color/points'),
+        # DeclareLaunchArgument('input_cloud_topic', default_value='/point_cloud'),
         DeclareLaunchArgument('resolution', default_value='0.15'),
         DeclareLaunchArgument('frame_id', default_value='camera_front_camera_depth_optical_frame'),
         DeclareLaunchArgument('base_frame_id', default_value='camera_front_link_camera'),

@@ -57,9 +57,11 @@ install(TARGETS
 
 # Install executables Python
 install(PROGRAMS
+  scripts/converting_video_frames_to_point_clouds.py
   scripts/joint_position_controller.py
   scripts/joint_velocity_controller.py
   scripts/move_arm.py
+  scripts/publishing_point_cloud.py
   scripts/topic_listener.py
   scripts/xarm6_traj_controller_publisher.py
   DESTINATION lib/${PROJECT_NAME}
