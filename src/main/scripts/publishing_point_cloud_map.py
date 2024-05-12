@@ -14,12 +14,9 @@ class PointCloudPublisher(Node):
         self.publisher_ = self.create_publisher(PointCloud2, 'point_cloud', 10)
         self.timer_period = 0.1  # seconds (adjust based on your needs)
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
-        self.frame_num = 1  # Initialize frame counter
 
     def timer_callback(self):
-        # Frame number formatting to match "frame_0000"
-        frame_filename = f"frame_{self.frame_num:04}.ply"
-        file_path = "/home/nikolaraicevic/Nikola_Robot_Manipulation/Data/240313_db_get/data/2024-03-13_17-27-53_output/output.ply"#f"/home/nikolaraicevic/Nikola_Robot_Manipulation/Data/240313_db_get/data/2024-03-13_17-32-13/data2_point_cloud/{frame_filename}"
+        file_path = "/home/nikolaraicevic/Nikola_Robot_Manipulation/Data/240313_db_get/data/2024-03-13_17-27-53_output/output.ply"
 
         # Attempt to load the point cloud data
         try:
@@ -34,14 +31,11 @@ class PointCloudPublisher(Node):
             # Create and publish the PointCloud2 message
             ros_cloud = pc2.create_cloud_xyz32(header, points)
             self.publisher_.publish(ros_cloud)
-            self.get_logger().info(f'Publishing {frame_filename}')
+            self.get_logger().info(f'Publishing {file_path}')
 
-            # Increment frame number for next callback
-            self.frame_num += 1
         except Exception as e:
-            self.get_logger().error(f'Failed to load {frame_filename}: {str(e)}')
-            # Optionally reset frame_num or handle error differently
-            # self.frame_num = 0
+            self.get_logger().error(f'Failed to load {file_path}: {str(e)}')
+
 
 def main(args=None):
     rclpy.init(args=args)

@@ -19,7 +19,7 @@ fx, fy, cx, cy = 461.98, 462.079, 326.45, 184.237  # Camera 1 Intrinsics
 # fx, fy, cx, cy = 321.651, 321.651, 321.608, 181.172  # Uncomment for Camera 2 Intrinsics
 
 frame_num = 0
-output_dir = '/home/nikolaraicevic/Nikola_Robot_Manipulation/Data/240313_db_get/data/2024-03-13_17-32-13/data2_point_cloud'
+output_dir = '/home/nikolaraicevic/Nikola_Robot_Manipulation/Data/240313_db_get/data/2024-03-13_17-32-13_output/data2_point_cloud'
 
 # Ensure the output directory exists
 os.makedirs(output_dir, exist_ok=True)

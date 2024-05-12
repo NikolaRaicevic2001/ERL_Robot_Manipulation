@@ -61,6 +61,7 @@ install(PROGRAMS
   scripts/joint_position_controller.py
   scripts/joint_velocity_controller.py
   scripts/move_arm.py
+  scripts/publishing_point_cloud_map.py
   scripts/publishing_point_cloud.py
   scripts/topic_listener.py
   scripts/xarm6_traj_controller_publisher.py
