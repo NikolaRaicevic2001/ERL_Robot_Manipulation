@@ -6,10 +6,11 @@ from OpenGL.GLU import *
 from math import cos, sin, radians
 
 class Environment:
-    def __init__(self, obstacles, start, goal):
+    def __init__(self, obstacles, start, goal, nodes):
         self.obstacles = obstacles  
         self.start = start 
         self.goal = goal   
+        self.nodes = nodes
 
     def draw(self):# Draw obstacles
         for obs_type, vertices in self.obstacles:
@@ -26,6 +27,16 @@ class Environment:
                 for angle in range(0, 361, 10):  # Circle approximation
                     glVertex2f(x + radius * cos(radians(angle)), y + radius * sin(radians(angle)))
                 glEnd()
+
+        # Draw RRT nodes and paths
+        glColor3f(0, 0, 0)  # Black color for RRT paths
+        glLineWidth(2)
+        glBegin(GL_LINES)
+        for node in self.nodes:
+            if node.parent:
+                glVertex2f(node.parent.x, node.parent.y)
+                glVertex2f(node.x, node.y)
+        glEnd()
 
         # Draw start and goal
         glPointSize(10)
