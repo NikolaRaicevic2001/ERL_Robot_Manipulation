@@ -2,6 +2,8 @@ import numpy as np
 import random
 from problems import visualizer_2D as viz2D
 
+from scipy.spatial import KDTree
+
 class RRTNode:
     def __init__(self, x, y, parent=None, cost = 0):
         self.x = x
@@ -48,15 +50,63 @@ def point_in_circle(point, circle):
     cx, cy, radius = circle
     return (px - cx) ** 2 + (py - cy) ** 2 <= radius ** 2
 
+def sdCircle(point, circle_SDF):
+    """ Signed Distance Function for a circle. """
+    px, py = point
+    cx, cy, radius = circle_SDF
+    distance_to_center = np.sqrt((px - cx) ** 2 + (py - cy) ** 2)
+    return distance_to_center - radius # The signed distance from the point to the circle.
+
+
+def sdEllipse(p, ellipse_SDF):
+    x_pos, y_pos, a, b = ellipse_SDF  # Unpacking the ellipse center and semi-axes
+    p = np.abs([p[0] - x_pos, p[1] - y_pos])  # Translate point to ellipse-centered coordinates
+
+    if p[0] > p[1]:
+        p = p[::-1]
+        a, b = b, a  # Swap axes if needed after reordering point coordinates
+
+    l = b**2 - a**2
+    m = a * p[0] / l
+    m2 = m**2
+    n = b * p[1] / l
+    n2 = n**2
+    c = (m2 + n2 - 1.0) / 3.0
+    c3 = c**3
+    q = c3 + m2 * n2 * 2.0
+    d = c3 + m2 * n2
+    g = m + m * n2
+
+    if d < 0.0:
+        h = np.arccos(q / c3) / 3.0
+        s = np.cos(h)
+        t = np.sin(h) * np.sqrt(3.0)
+        rx = np.sqrt(-c * (s + t + 2.0) + m2)
+        ry = np.sqrt(-c * (s - t + 2.0) + m2)
+        co = (ry + np.sign(l) * rx + np.abs(g) / (rx * ry) - m) / 2.0
+    else:
+        h = 2.0 * m * n * np.sqrt(d)
+        s = np.sign(q + h) * np.power(np.abs(q + h), 1.0 / 3.0)
+        u = np.sign(q - h) * np.power(np.abs(q - h), 1.0 / 3.0)
+        rx = -s - u - c * 4.0 + 2.0 * m2
+        ry = (s - u) * np.sqrt(3.0)
+        rm = np.sqrt(rx**2 + ry**2)
+        co = (ry / np.sqrt(rm - rx) + 2.0 * g / rm - m) / 2.0
+
+    r = [a * co, b * np.sqrt(1.0 - co**2)]
+    return np.linalg.norm(r - p) * np.sign(p[1] - r[1])
+
 def is_collision_free(node, obstacles):
-    """Check if a node does not collide with any obstacles:
-    For polygons: ('polygon', [(x1, y1), (x2, y2), ...])
-    For circles: ('circle', (center_x, center_y, radius))"""
+    """ Check if a node does not collide with any obstacles """
     x, y = node.x, node.y
     for obs_type, shape in obstacles:
         if obs_type == 'polygon' and point_in_polygon((x, y), shape):
             return False
         elif obs_type == 'circle' and point_in_circle((x, y), shape):
+            return False
+        elif obs_type == 'circle_SDF' and sdCircle((x, y), shape) < 50:
+            return False
+        elif obs_type == 'ellipse_SDF' and sdEllipse((x, y), shape) < 50:
             return False
     return True
 
@@ -129,47 +179,51 @@ class RRT_Star:
         self.goal_bias = goal_bias
         self.max_iters = max_iterations
         self.nodes = [self.start]
+        self.kdtree = KDTree([(self.start.x, self.start.y)])
         self.goal_region = 0.1
-
-    def distance_hypot(self, p1, p2):
-        return np.hypot(p2.x - p1.x, p2.y - p1.y)
 
     def sample(self):
         if random.random() < self.goal_bias:
-            return self.goal
+            return (self.goal.x, self.goal.y)
         else:
-            return RRTNode(random.uniform(self.bounds[0], self.bounds[1]), random.uniform(self.bounds[2], self.bounds[3]))
+            x = random.uniform(self.bounds[0], self.bounds[1])
+            y = random.uniform(self.bounds[2], self.bounds[3])
+            return (x, y)
 
     def nearest(self, point):
-        return min(self.nodes, key=lambda node: self.distance_hypot(node, point))
+        distances, indexes = self.kdtree.query([point], k=1)
+        return self.nodes[indexes[0]]
 
-    def steer(self, from_node, to_node):
-        dist = self.distance_hypot(from_node, to_node)
+    def steer(self, from_node, to_point):
+        dist = distance(from_node, RRTNode(to_point[0], to_point[1]))
         if dist < self.step_size:
-            return to_node
+            return RRTNode(to_point[0], to_point[1], parent=from_node)
         ratio = self.step_size / dist
-        new_x = from_node.x + ratio * (to_node.x - from_node.x)
-        new_y = from_node.y + ratio * (to_node.y - from_node.y)
-        return RRTNode(new_x, new_y)
-
-    def is_safe(self, point):
-        # This method should include the logic to check collisions
-        return is_collision_free(point, self.obstacles)
+        new_x = from_node.x + ratio * (to_point[0] - from_node.x)
+        new_y = from_node.y + ratio * (to_point[1] - from_node.y)
+        return RRTNode(new_x, new_y, parent=from_node)
 
     def plan(self):
         for i in range(self.max_iters):
-            random_node = self.sample()
-            nearest_node = self.nearest(random_node)
-            new_node = self.steer(nearest_node, random_node)
-            if self.is_safe(new_node):
-                new_node.set_parent(nearest_node, nearest_node.cost + self.distance_hypot(nearest_node, new_node))
+            rand_point = self.sample()
+            nearest_node = self.nearest(rand_point)
+            new_node = self.steer(nearest_node, rand_point)
+
+            if is_collision_free(new_node, self.obstacles):
+                new_node.set_parent(nearest_node, nearest_node.cost + distance(nearest_node, new_node))
                 self.nodes.append(new_node)
-                self.rewire(new_node)  # Rewire the tree with respect to the new node
-                if self.distance_hypot(new_node, self.goal) <= self.goal_region:
-                    self.goal.set_parent(new_node, new_node.cost + self.distance_hypot(new_node, self.goal))
+                self.kdtree = KDTree([(node.x, node.y) for node in self.nodes])
+                self.rewire(new_node)
+
+                if distance(new_node, self.goal) <= self.goal_region:
+                    print("Goal reached")
+                    self.goal.set_parent(new_node, new_node.cost + distance(new_node, self.goal))
                     return self.extract_path(self.goal)
-                
+            else:
+                print(f"Collision detected at: ({new_node.x}, {new_node.y})")
+        print("Maximum iterations reached without finding a path.")
         return None
+
 
     def extract_path(self, end_node):
         path = []
@@ -179,26 +233,17 @@ class RRT_Star:
             current_node = current_node.parent
         path.append((self.start.x, self.start.y))
         return path[::-1]
-    
+
     def rewire(self, new_node):
-        # Define a search radius based on problem dimension and tree cardinality
-        search_radius = self.step_size * 5  # Example radius, should be adjusted based on your specific needs
-        # Find nearby nodes within the search radius
-        nearby_nodes = [node for node in self.nodes if self.distance_hypot(node, new_node) < search_radius and node != new_node]
-        for node in nearby_nodes:
-            new_cost = new_node.cost + self.distance_hypot(new_node, node)
-            if new_cost < node.cost:  # Found a better path to this node via new_node
-                if self.is_safe(node):  # Make sure path from new_node to node is free of obstacles
-                    node.set_parent(new_node, new_cost)
+        N = len(self.nodes)
+        rad = 1.414 * (np.log(N) / N) ** (0.5)
+        neighbors = [node for node in self.nodes if distance(node, new_node) < rad and node != new_node]
 
-        # Check if new_node provides a better path to any of its non-direct children
-        for node in nearby_nodes:
-            potential_cost = new_node.cost + self.distance_hypot(new_node, node)
-            if potential_cost < node.cost and self.is_safe(node):
-                node.set_parent(new_node, potential_cost)
-                self.rewire(node)  # Recursively rewire the tree if the path cost improved
+        for node in neighbors:
+            new_cost = new_node.cost + distance(new_node, node)
+            if new_cost < node.cost and is_collision_free(node, self.obstacles):
+                node.set_parent(new_node, new_cost)
 
-    
     def get_nodes(self):
-        self.plan() 
-        return self.nodes  
+        self.plan()
+        return self.nodes

@@ -3,7 +3,7 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from math import cos, sin, radians
+from math import cos, sin, radians, pi
 
 class Environment:
     def __init__(self, obstacles, start, goal, nodes):
@@ -13,6 +13,9 @@ class Environment:
         self.nodes = nodes
 
     def draw(self):# Draw obstacles
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
         for obs_type, vertices in self.obstacles:
             if obs_type == 'polygon':
                 glBegin(GL_POLYGON)
@@ -26,6 +29,51 @@ class Environment:
                 x, y, radius = vertices
                 for angle in range(0, 361, 10):  # Circle approximation
                     glVertex2f(x + radius * cos(radians(angle)), y + radius * sin(radians(angle)))
+                glEnd()
+            elif obs_type == 'circle_SDF':
+                num_segments = 100
+                x, y, radius = vertices
+                outer_radius = radius + 50
+
+                glBegin(GL_TRIANGLE_FAN)
+                glColor3f(1, 0, 0)  # Blue color for obstacles
+                for angle in range(0, 361, 10):  # Circle approximation
+                    glVertex2f(x + radius * cos(radians(angle)), y + radius * sin(radians(angle)))
+                glEnd()
+
+                # Draw the circle with gradient
+                for i in range(num_segments):
+                    theta = 2.0 * pi * i / num_segments
+                    next_theta = 2.0 * pi * (i + 1) / num_segments
+                    glBegin(GL_TRIANGLE_STRIP)
+                    # Center of circle, full color intensity
+                    glColor4f(1, 1, 0, 1)  # Yellow at the center
+                    glVertex2f(x + radius * cos(theta), y + radius * sin(theta))
+                    glVertex2f(x + radius * cos(next_theta), y + radius * sin(next_theta))
+
+                    # Outer edge of fade effect
+                    glColor4f(0, 1, 0, 0)  # Green fading to transparent
+                    glVertex2f(x + outer_radius * cos(theta), y + outer_radius * sin(theta))
+                    glVertex2f(x + outer_radius * cos(next_theta), y + outer_radius * sin(next_theta))
+                    glEnd()
+            elif obs_type == 'ellipse_SDF':
+                num_segments = 100
+                x, y, a, b = vertices
+                outer_scale = 50
+
+                # Draw the ellipse using triangle strips with gradient extending beyond the radii
+                outer_a = a + outer_scale  # Extend the horizontal radius for gradient
+                outer_b = b + outer_scale  # Extend the vertical radius for gradient
+            
+                glBegin(GL_TRIANGLE_STRIP)
+                for i in range(num_segments + 1):  # +1 to close the loop
+                    theta = 2.0 * pi * i / num_segments
+                    # Inner edge of ellipse
+                    glColor4f(1, 1, 0, 1)  # Yellow at the ellipse's edge
+                    glVertex2f(x + a * cos(theta), y + b * sin(theta))
+                    # Outer edge of gradient
+                    glColor4f(0, 1, 0, 0)  # Green fading to transparent
+                    glVertex2f(x + outer_a * cos(theta), y + outer_b * sin(theta))
                 glEnd()
 
         # Draw RRT nodes and paths
@@ -100,6 +148,3 @@ class PlannerApp:
             self.environment.draw()
             pygame.display.flip()
         pygame.quit()
-
-
-
