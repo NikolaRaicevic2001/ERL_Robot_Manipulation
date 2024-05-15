@@ -16,6 +16,7 @@ find_package(ompl REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
+# Include Directories
 include_directories(include ${OMPL_INCLUDE_DIRS})
 
 # find dependencies for python
@@ -25,25 +26,43 @@ find_package(rclpy)
 set(dependencies "ompl" "rclcpp" "std_msgs")
 
 # Adding Executables
-add_executable(geometric_planning_for_rigid_body_in_3D src/geometric_planning_for_rigid_body_in_3D.cpp)
+add_executable(RigidBodyPlanning src/RigidBodyPlanning.cpp)
+add_executable(StateSampling src/StateSampling.cpp)
 
 # Include directories for the executables
-target_include_directories(geometric_planning_for_rigid_body_in_3D PUBLIC
+target_include_directories(RigidBodyPlanning PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+target_include_directories(StateSampling PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+# Target Link
+target_link_libraries(RigidBodyPlanning ${OMPL_LIBRARIES})
+target_link_libraries(StateSampling ${OMPL_LIBRARIES})
 
 # Compile features for the executables
-target_compile_features(geometric_planning_for_rigid_body_in_3D PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(RigidBodyPlanning PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(StateSampling PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 # Dependencies for the executables
-ament_target_dependencies(geometric_planning_for_rigid_body_in_3D 
+ament_target_dependencies(RigidBodyPlanning 
   ${dependencies}
   # "geometric_msgs"
 )
 
-install(TARGETS geometric_planning_for_rigid_body_in_3D
+ament_target_dependencies(StateSampling 
+  ${dependencies}
+  # "geometric_msgs"
+)
+
+
+install(TARGETS RigidBodyPlanning
   DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS StateSampling
+  DESTINATION lib/${PROJECT_NAME})  
 
 # Install executables Python
 # install(PROGRAMS
