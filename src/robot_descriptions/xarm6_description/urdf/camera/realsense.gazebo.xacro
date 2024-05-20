@@ -5,7 +5,7 @@
 
   <xacro:macro name="realsense_gazebo" params="prefix:='' ">
     <gazebo reference="${prefix}camera_depth_frame">
-      <sensor name="cameradepth" type="depth">
+      <sensor name="${camera_02}_cameradepth" type="depth">
         <camera name="camera">
           <horizontal_fov>1.57</horizontal_fov>
           <image>
@@ -28,7 +28,7 @@
       </sensor>
     </gazebo>
     <gazebo reference="${prefix}camera_color_frame">
-      <sensor name="cameracolor" type="camera">
+      <sensor name="${camera_02}_cameracolor" type="camera">
         <camera name="camera">
           <horizontal_fov>1.57</horizontal_fov>
           <image>
@@ -52,7 +52,7 @@
       </sensor>
     </gazebo>
     <gazebo reference="${prefix}camera_left_ir_frame">
-      <sensor name="cameraired1" type="camera">
+      <sensor name="${camera_02}_cameraired1" type="camera">
         <camera name="camera">
           <horizontal_fov>1.57</horizontal_fov>
           <image>
@@ -76,7 +76,7 @@
       </sensor>
     </gazebo>
     <gazebo reference="${prefix}camera_right_ir_frame">
-      <sensor name="cameraired2" type="camera">
+      <sensor name="${camera_02}_cameraired2" type="camera">
         <camera name="camera">
           <horizontal_fov>1.57</horizontal_fov>
           <image>
@@ -101,7 +101,7 @@
     </gazebo>
     <gazebo>
       <plugin name="realsense_${camera_02}" filename="librealsense_gazebo_plugin.so">
-        <prefix>camera</prefix>
+        <prefix>${camera_02}_camera</prefix>
         <depthUpdateRate>30.0</depthUpdateRate>
         <colorUpdateRate>30.0</colorUpdateRate>
         <infraredUpdateRate>30.0</infraredUpdateRate>
