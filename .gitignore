@@ -4,5 +4,6 @@ install
 /log
 /bag_files
 
+# Packages
 src/octomap/
 src/pyOptimalMotionPlanning/
