@@ -21,17 +21,18 @@ def main(problem_type, planner_type):
 
     if planner_type == 'rrt_star':
         bounds = (0,window_size,0,window_size)
-        planner = RRT.RRT_Star(start, goal,obstacles, bounds,goal_bias=0.2, step_size=15, max_iterations=2000)
+        planner = RRT.RRT_Star(start, goal,obstacles, bounds,goal_bias=0.2, step_size=15, max_iterations=3000)
         nodes = planner.get_nodes()
     elif planner_type == 'rrt':
-        planner = RRT.RRT(start, goal,obstacles,goal_bias=0.05, step_size=20, max_iterations=1000)
+        planner = RRT.RRT(start, goal,obstacles,goal_bias=0.05, step_size=20, max_iterations=3000)
         nodes = planner.get_nodes()
     else:
         print("Unknown planner type specified")
         return
 
-    env = viz2D.Environment(obstacles, start, goal,nodes)
-    app = viz2D.PlannerApp(window_size, window_size, env)
+    grid_size = 5
+    env = viz2D.Environment(obstacles, start, goal,nodes, window_size, window_size, grid_size)
+    app = viz2D.PlannerApp(window_size, window_size, env, grid_size)
     app.run()
 
 

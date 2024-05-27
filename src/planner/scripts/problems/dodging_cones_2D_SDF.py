@@ -18,7 +18,7 @@ class Dodging_Cones_SDF:
             self.obstacles.append( ('circle_SDF', (x_pos,y_pos,radius)) )
 
         # Define the problem environment with circle
-        for i in range(10):
+        for i in range(0):
             x_pos = random.randint(int(window_size/10),int(window_size/10*9))
             y_pos = random.randint(0,int(window_size))
             radius = random.randint(int(window_size/100),int(window_size/100*5))

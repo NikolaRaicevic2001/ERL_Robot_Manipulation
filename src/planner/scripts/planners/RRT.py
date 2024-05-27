@@ -220,7 +220,8 @@ class RRT_Star:
                     self.goal.set_parent(new_node, new_node.cost + distance(new_node, self.goal))
                     return self.extract_path(self.goal)
             else:
-                print(f"Collision detected at: ({new_node.x}, {new_node.y})")
+                # print(f"Collision detected at: ({new_node.x}, {new_node.y})")
+                pass
         print("Maximum iterations reached without finding a path.")
         return None
 

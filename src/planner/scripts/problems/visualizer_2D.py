@@ -1,21 +1,70 @@
+import sys
+import numpy as np
+from math import cos, sin, radians, pi
+
 import pygame
 from pygame.locals import *
+
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from math import cos, sin, radians, pi
+from planners import RRT
 
 class Environment:
-    def __init__(self, obstacles, start, goal, nodes):
+    def __init__(self, obstacles, start, goal, nodes, width, height, grid_resolution = 10):
         self.obstacles = obstacles  
         self.start = start 
         self.goal = goal   
         self.nodes = nodes
+        self.grid_resolution = grid_resolution
+        self.SDF_Map = np.full((height // grid_resolution, width // grid_resolution), float('inf'))
 
     def draw(self):# Draw obstacles
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
+        # SDF Obstacles
+        for obs_type, vertices in self.obstacles:
+            if obs_type == 'circle_SDF':
+                for grid_y in range(self.SDF_Map.shape[0]):
+                    for grid_x in range(self.SDF_Map.shape[1]):
+                        x = grid_x * self.grid_resolution + self.grid_resolution // 2
+                        y = grid_y * self.grid_resolution + self.grid_resolution // 2
+                        distance = RRT.sdCircle((x,y), vertices)
+                        self.SDF_Map[grid_y,grid_x] = min(self.SDF_Map[grid_y,grid_x],distance)
+
+            elif obs_type == 'ellipse_SDF':
+                for grid_y in range(self.SDF_Map.shape[0]):
+                    for grid_x in range(self.SDF_Map.shape[1]):
+                        x = grid_x * self.grid_resolution + self.grid_resolution // 2
+                        y = grid_y * self.grid_resolution + self.grid_resolution // 2
+                        distance = RRT.sdEllipse((x,y), vertices)
+                        self.SDF_Map[grid_y,grid_x] = min(self.SDF_Map[grid_y,grid_x],distance)
+
+        # Draw SDF Map
+        if np.any(self.SDF_Map < float('inf')):
+            glBegin(GL_QUADS)
+            max_distance = np.max(np.abs(self.SDF_Map))
+            for grid_y in range(self.SDF_Map.shape[0]):
+                for grid_x in range(self.SDF_Map.shape[1]):
+                    x = grid_x * self.grid_resolution
+                    y = grid_y * self.grid_resolution
+                    distance = self.SDF_Map[grid_y, grid_x]
+                    normalized_distance = distance / max_distance
+                    if distance < 0:
+                        glColor3f(1.0, normalized_distance, normalized_distance)
+                    else:
+                        glColor3f(1.0 - normalized_distance, normalized_distance, 0.0)
+
+                    # Draw a quad for each grid cell
+                    glVertex2f(x, y)
+                    glVertex2f(x + self.grid_resolution, y)
+                    glVertex2f(x + self.grid_resolution, y + self.grid_resolution)
+                    glVertex2f(x, y + self.grid_resolution)
+            glEnd()
+
+
+        # Obstacles
         for obs_type, vertices in self.obstacles:
             if obs_type == 'polygon':
                 glBegin(GL_POLYGON)
@@ -95,6 +144,7 @@ class Environment:
         glVertex2f(*self.goal)
         glEnd()
 
+
     def update_start_goal(self, new_start=None, new_goal=None):
         if new_start:
             self.start = new_start
@@ -102,17 +152,18 @@ class Environment:
             self.goal = new_goal
 
 class PlannerApp:
-    def __init__(self, width, height, environment):
+    def __init__(self, width, height, environment, grid_size=10):
         self.width = width
         self.height = height
+        self.grid_size = grid_size
         self.environment = environment
         pygame.init()
         pygame.display.set_mode((width, height), DOUBLEBUF | OPENGL)
         gluOrtho2D(0, width, 0, height)
-        self.mouse_down = False
         glClearColor(1, 1, 1, 1) 
+        self.mouse_down = False
 
-    def draw_grid(self, color=(1, 1, 1), grid_size=20):
+    def draw_grid(self, color=(0.5, 0.5, 0.5), grid_size=10):
         """Draw a grid to help visualize the plane."""
         glBegin(GL_LINES)
         glColor3fv(color)
@@ -144,7 +195,8 @@ class PlannerApp:
                     self.mouse_down = False
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-            self.draw_grid()
+            self.draw_grid(grid_size = self.grid_size)
             self.environment.draw()
             pygame.display.flip()
         pygame.quit()
+
