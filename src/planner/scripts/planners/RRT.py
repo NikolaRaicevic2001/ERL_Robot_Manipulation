@@ -108,6 +108,8 @@ def is_collision_free(node, obstacles):
             return False
         elif obs_type == 'ellipse_SDF' and sdEllipse((x, y), shape) < 50:
             return False
+        elif obs_type == 'circle_Occupied' and sdCircle((x, y), shape) < 50:
+            return False
     return True
 
 ######################################################

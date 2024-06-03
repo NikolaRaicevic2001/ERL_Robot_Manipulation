@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+from scipy import ndimage
 from math import cos, sin, radians, pi
 
 import pygame
@@ -16,12 +17,48 @@ class Environment:
         self.start = start 
         self.goal = goal   
         self.nodes = nodes
+        self.width = width
+        self.height = height
         self.grid_resolution = grid_resolution
         self.SDF_Map = np.full((height // grid_resolution, width // grid_resolution), float('inf'))
+        self.grid = np.zeros((height // grid_resolution, width // grid_resolution), dtype=np.uint8)
+        self.SDF_Map_Occupied = np.full((height // grid_resolution, width // grid_resolution), float('inf'))
 
     def draw(self):# Draw obstacles
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        # Occupied Obstacles
+        for obs_type, params in self.obstacles:
+            if obs_type == 'circle_Occupied':
+                x_center, y_center, radius = params
+                # Ensure grid indices are within bounds and calculate the correct indices
+                for i in range(max(0, y_center - radius), min(self.height, y_center + radius)):
+                    for j in range(max(0, x_center - radius), min(self.width, x_center + radius)):
+                        if (i - y_center) ** 2 + (j - x_center) ** 2 <= radius ** 2:
+                            self.grid[i // self.grid_resolution, j // self.grid_resolution] = 1
+
+        if np.any(self.grid):
+            dist_to_obstacle = ndimage.distance_transform_edt(1 - self.grid)
+            dist_from_obstacle = ndimage.distance_transform_edt(self.grid)
+            self.SDF_Map_Occupied = dist_to_obstacle - dist_from_obstacle
+
+        # Draw SDF Map from Distance Transform
+        if np.any(self.SDF_Map_Occupied < float('inf')):
+            glBegin(GL_QUADS)
+            max_distance = np.max(self.SDF_Map_Occupied)
+            for grid_y in range(self.SDF_Map_Occupied.shape[0]):
+                for grid_x in range(self.SDF_Map_Occupied.shape[1]):
+                    x = grid_x * self.grid_resolution
+                    y = grid_y * self.grid_resolution
+                    distance = self.SDF_Map_Occupied[grid_y, grid_x]
+                    normalized_distance = distance / max_distance
+                    glColor3f(1.0 - normalized_distance, normalized_distance, 0)
+                    glVertex2f(x, y)
+                    glVertex2f(x + self.grid_resolution, y)
+                    glVertex2f(x + self.grid_resolution, y + self.grid_resolution)
+                    glVertex2f(x, y + self.grid_resolution)
+            glEnd()
 
         # SDF Obstacles
         for obs_type, vertices in self.obstacles:
@@ -41,7 +78,7 @@ class Environment:
                         distance = RRT.sdEllipse((x,y), vertices)
                         self.SDF_Map[grid_y,grid_x] = min(self.SDF_Map[grid_y,grid_x],distance)
 
-        # Draw SDF Map
+        # Draw SDF Map Min Distance
         if np.any(self.SDF_Map < float('inf')):
             glBegin(GL_QUADS)
             max_distance = np.max(np.abs(self.SDF_Map))

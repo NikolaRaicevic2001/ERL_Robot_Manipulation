@@ -1,6 +1,8 @@
 import argparse
 from problems import visualizer_2D as viz2D
-from problems import narrow_path_2D, dodging_cones_2D, dodging_cones_2D_SDF, ellipse_2D_SDF
+from problems import narrow_path_2D, dodging_cones_2D
+from problems import dodging_cones_2D_SDF, ellipse_2D_SDF
+from problems import dodging_cones_2D_Occupied_SDF
 
 from planners import RRT
 
@@ -13,6 +15,8 @@ def main(problem_type, planner_type):
         environment = dodging_cones_2D_SDF.Dodging_Cones_SDF()
     elif problem_type == 'ellipse_2D_SDF':
         environment = ellipse_2D_SDF.Dodging_Ellipse_SDF()
+    elif problem_type == 'dodging_cones_occupied_SDF':
+        environment = dodging_cones_2D_Occupied_SDF.Dodging_Cones_Occupied_SDF()
     else:
         print("Unknown problem type specified")
         return
@@ -38,7 +42,7 @@ def main(problem_type, planner_type):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the planning environment")
-    parser.add_argument('problem_type', type=str, help='Type of problem to solve ("narrow_path_2D", "dodging_cones_2D", "dodging_cones_2D_SDF")')
+    parser.add_argument('problem_type', type=str, help='Type of problem to solve ("narrow_path_2D", "dodging_cones_2D", "dodging_cones_2D_SDF","dodging_cones_occupied_SDF")')
     parser.add_argument('planner_type', type=str, help='Type of planner to use ("rrt_star", "rrt")')
     args = parser.parse_args()
 
